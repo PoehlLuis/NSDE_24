@@ -35,30 +35,32 @@ Local Node Numbers starting from bottom left in a counter-clockwise rotation
 '''
 
 #%%
+# TODO 
+width, height, order_num_int, amount_of_nodes_per_axis = getGeometryInputs_hard_coded()
 
-width, height, order_num_int = getGeometryInputs()
+line_start, line_end, line_value_function, amount_of_line_points = getLineInputs_hard_coded(width, height)
 
-line_start, line_end, line_value_function = getLineInputs(width, height)
+mat_tensor = getMaterialTensor_hard_coded()
 
-mat_tensor = getMaterialTensor()
+boundary_conditions_ = getBCInputs_hard_coded()
 
-boundary_conditions_ = getBCInputs()
 
+# de drei zeilen kennen gelöscht werden
 boundary_conditions = [[boundary_conditions_[0][0],boundary_conditions_[0][1]],
 [boundary_conditions_[1][0],boundary_conditions_[1][1]],[boundary_conditions_[2][0],boundary_conditions_[2][1]],
-[boundary_conditions_[3][0],boundary_conditions_[3][1]],[Type.Dirichlet.value, 0]]
+[boundary_conditions_[3][0],boundary_conditions_[3][1]],[Type.Dirichlet.value, line_value_function]]
 
 
 
 # creates the mesh with all the nodes
-mesh_coords = createMesh(width, height)
+mesh_coords = createMesh(width, height, amount_of_nodes_per_axis)
 
 # gets amount of coordinate pairs
 array_size = mesh_coords.shape[0]
 
 # get the coordinates of the Line
 line_coords = []
-line_coords = getLineCoordinates(line_start, line_end, mesh_coords)
+line_coords = getLineCoordinates(line_start, line_end, mesh_coords, amount_of_line_points)
 
 line_values = []
 if line_coords:  # checks if list is not empty
@@ -69,21 +71,14 @@ if line_coords:  # checks if list is not empty
 NE_array = get_node_equation_array(array_size, mesh_coords, line_coords)
 
 # creates the finite elements of the domain
-finite_elements = element_generation(NE_array, NODE_AMOUNT_PER_AXIS, height, width, boundary_conditions)
+finite_elements = element_generation(NE_array, amount_of_nodes_per_axis, height, width, boundary_conditions)
 # System-matrix K
 
 K = np.zeros([array_size, array_size])
 
-order = 4
 rho = 1
 rhs = np.zeros(array_size)
-K, rhs = assembling_algorithm(finite_elements, 4, K, rhs, mat_tensor, order, rho)
-
-
-
-with open('matrix.csv', mode='w', newline='') as file:
-    writer = csv.writer(file)
-    writer.writerows(K)
+K, rhs = assembling_algorithm(finite_elements, 4, K, rhs, mat_tensor, order_num_int, rho)
 
 #Resize the Arrays to the size we need them by cutting away the 0 entries
 K = K[:array_size - len(line_values) - 36, :array_size - len(line_values) - 36]
@@ -92,6 +87,8 @@ rhs = rhs[:array_size - len(line_values) - 36]
 u = np.linalg.solve(K, rhs)
 
 # Add togheter the calculated values of the Nodes with Node-Equation-Numbers with the Boundaries
+# Muas umgeschrieben werden, damit werte von Linie verwendet werden. 
+# odr glabi spater brauchen mir den toal gor nit weil mirs in algorithmus schun richtig zommensetzen
 counter = 0
 out = []
 for i in range(9):
@@ -114,7 +111,7 @@ out = np.array(out)
 global_node_numbers_list = []
 for j in range(0, 9):
      for i in range(0, 9):
-          arr = np.array([NODE_AMOUNT_PER_AXIS *(j+1) + i, NODE_AMOUNT_PER_AXIS*(j+1) + (i+1), NODE_AMOUNT_PER_AXIS *(j) + i, NODE_AMOUNT_PER_AXIS *(j) + (i+1)])
+          arr = np.array([amount_of_nodes_per_axis *(j+1) + i, amount_of_nodes_per_axis*(j+1) + (i+1), amount_of_nodes_per_axis *(j) + i, amount_of_nodes_per_axis *(j) + (i+1)])
           global_node_numbers_list.append(arr)
         
 global_node_numbers_array = np.array(global_node_numbers_list)

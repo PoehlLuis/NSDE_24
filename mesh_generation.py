@@ -3,22 +3,22 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches  # used to show the bounding box in the matplotlib plot
 
 #%%
-NODE_AMOUNT_PER_AXIS = 10  # meaning in x and in y direction respectively
+#NODE_AMOUNT_PER_AXIS = 10  # meaning in x and in y direction respectively
 
 # Creates the nodes of the mesh
 # Inputs: width and height of the domain
 # Output: coordinates of the nodes
-def createMesh(width, height):
+def createMesh(width, height, amount_of_nodes_per_axis):
 
-    x_coords = np.zeros(NODE_AMOUNT_PER_AXIS**2, dtype=float)
-    y_coords = np.zeros(NODE_AMOUNT_PER_AXIS**2, dtype=float)
+    x_coords = np.zeros(amount_of_nodes_per_axis**2, dtype=float)
+    y_coords = np.zeros(amount_of_nodes_per_axis**2, dtype=float)
 
-    x_offset = width / (NODE_AMOUNT_PER_AXIS - 1)
-    y_offset = height / (NODE_AMOUNT_PER_AXIS - 1)
+    x_offset = width / (amount_of_nodes_per_axis - 1)
+    y_offset = height / (amount_of_nodes_per_axis - 1)
 
-    for i in range(NODE_AMOUNT_PER_AXIS):
-        for j in range(NODE_AMOUNT_PER_AXIS):
-            index = i * NODE_AMOUNT_PER_AXIS + j
+    for i in range(amount_of_nodes_per_axis):
+        for j in range(amount_of_nodes_per_axis):
+            index = i * amount_of_nodes_per_axis + j
             x_coords[index] = j * x_offset
             y_coords[index] = i * y_offset
 

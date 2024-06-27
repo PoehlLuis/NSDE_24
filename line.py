@@ -5,16 +5,12 @@ import math
 # Inputs: start-coordinate of the line
 #         end-coordinate of the line
 #         coordinates of the mesh
+#         amount of points to interpolate the line
 # Output: The line represented as coordinates of the mesh
-def getLineCoordinates(start, end, mesh_coords):
+def getLineCoordinates(start, end, mesh_coords, amount_of_line_points):
 
-    # the higher this is the more points on the line get queried
-    # this could in some cases result to more points beeing 'chosen', 
-    # thus more accurate result of the line 
-    AMOUNT_OF_POINTS_ON_LINE = 10
-
-    x = np.linspace(start[0], end[0], AMOUNT_OF_POINTS_ON_LINE)
-    y = np.linspace(start[1], end[1], AMOUNT_OF_POINTS_ON_LINE)
+    x = np.linspace(start[0], end[0], amount_of_line_points)
+    y = np.linspace(start[1], end[1], amount_of_line_points)
     coords = np.column_stack((x, y))
     
     # Initialization of BallTree

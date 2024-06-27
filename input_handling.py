@@ -6,25 +6,51 @@ import numpy as np
 
 # used for testing the program, just wirte the values in here
 def getGeometryInputs_hard_coded():
-    width, height, order_num_int = 90, 180, 1
+    width, height, order_num_int, amount_of_nodes_per_axis = 90, 180, 1, 10
 
-    return width, height, order_num_int
+    return width, height, order_num_int, amount_of_nodes_per_axis
 
 # for finished version, lets user input values and error-checks them
 def getGeometryInputs():
-    width, height, order_num_int = 0, 0, 0
+    width, height, order_num_int, amount_of_nodes_per_axis = 0, 0, 0, 0
 
     print("Input the Width: ")
-    width = getNumberFromUser()
+    width = getNumberAboveZero()
     print("Input the Height: ")
-    height = getNumberFromUser()
+    height = getNumberAboveZero()
     print("Input the Order of the Numerical Integration: ")
-    order_num_int = getNumberFromUser()
+    order_num_int = getNumberFromUserInRange(4)
+    print("Input the Amount of Nodes per Axis: ")
+    amount_of_nodes_per_axis = getIntegerNumberAboveZero()
 
-    return width, height, order_num_int
+    return width, height, order_num_int, amount_of_nodes_per_axis
 
-# get a number from the user throught the console and makes error checks
-def getNumberFromUser():
+# get a non-integer number above zero from the user throught the console and makes error checks
+def getNumberAboveZero():
+    while True:
+        number = input()
+        try:
+            number = float(number)
+            if number > 0:
+                return number
+            else:
+                print("Please enter a number greater than 0.\n")
+        except ValueError:
+            print("Please enter a number greater than 0.\n")
+
+# get a non-integer number (can also be zero) from the user throught the console and makes error checks
+def getNumberWithZero():
+    while True:
+        number = input()
+        try:
+            number = float(number)
+            return number
+        except ValueError:
+            print("Please enter a number greater than 0.\n")
+
+
+# get a integer number above zero from the user throught the console and makes error checks
+def getIntegerNumberAboveZero():
     while(1):
         number = input()
         if(number.isnumeric()):  # checks if value is numeric
@@ -40,7 +66,7 @@ def getNumberFromUserInRange(range):
             if(int(number) > 0):  # checks if numeric value is greater than 0 and less than thr given range
                 if(int(number) <= range):
                     return int(number)
-        print("Please enter a Number greater than 0 and less than " + str(range) + ".\n")
+        print("Please enter a Number greater than 0 and less (or equal) than " + str(range) + ".\n")
 
 def getNumberFromUserInRangeWithZero(range):
     while(1):
@@ -60,46 +86,52 @@ def getNumberFromUserWithAll():
 
 # user input for line with given value
 def getLineInputs(width, height):
-    start, end, value_function = 0, 0, ""
+    start, end, value_function, amount_of_line_points = 0, 0, "", 0
 
     print("X-Coordinate of the Start-Point of the Line: ")
-    x_start = getNumberFromUserInRange(width)
+    x_start = getNumberFromUserInRangeWithZero(width)
     print("Y-Coordinate of the Start-Point of the Line: ")
-    y_start = getNumberFromUserInRange(height)
+    y_start = getNumberFromUserInRangeWithZero(height)
     print("X-Coordinate of the End-Point of the Line: ")
-    x_end = getNumberFromUserInRange(width)
+    x_end = getNumberFromUserInRangeWithZero(width)
     print("Y-Coordinate of the End-Point of the Line: ")
-    y_end = getNumberFromUserInRange(height)
+    y_end = getNumberFromUserInRangeWithZero(height)
     print("Input the value of the Line: ")
     value_function = input()
+    print("Input the amount of Points the line should be interpolated by: ")
+    amount_of_line_points = getIntegerNumberAboveZero()
 
     start = (x_start, x_end)
     end = (y_start, y_end)
 
-    return start, end, value_function
+    return start, end, value_function, amount_of_line_points
 
-
-def getMaterialTensor():
-    print("First value of the material Tensor: ")
-    value1 = getNumberFromUser()
-    print("Second value of the material Tensor: ")
-    value2 = getNumberFromUser()
-    print("Third value of the material Tensor: ")
-    value3 = getNumberFromUser()
-    print("Fourth value of the material Tensor: ")
-    value4 = getNumberFromUser()
-    return np.array([[value1, value2],[value3, value4]])
-
-def getLineInputs_hard_coded():
+def getLineInputs_hard_coded(height, width):
     start = (50, 180)
     end = (50, 0)
     value_function = "0"
+    amount_of_line_points = 10
 
     #start = (10, 160)
     #end = (57, 100)
     #value_function = "{x}+{y}"
 
-    return start, end, value_function
+    return start, end, value_function, amount_of_line_points
+
+
+def getMaterialTensor():
+    print("First value of the material Tensor: ")
+    value1 = getNumberWithZero()
+    print("Second value of the material Tensor: ")
+    value2 = getNumberWithZero()
+    print("Third value of the material Tensor: ")
+    value3 = getNumberWithZero()
+    print("Fourth value of the material Tensor: ")
+    value4 = getNumberWithZero()
+    return np.array([[value1, value2],[value3, value4]])
+
+def getMaterialTensor_hard_coded():
+    return np.array([[1, 1], [1, 1]])
 
 def getBCInputs():
     top_side = getBCInput("top")
@@ -115,4 +147,8 @@ def getBCInput(side):
     print(f"Input the {side} boundary value: ")
     bc[1] = getNumberFromUserWithAll()
     return bc
+
+# value 10 on the left, value 0 on the right, neumann 0 on top an bottom
+def getBCInputs_hard_coded():
+    return [1, 0], [0, 0], [1, 0], [0, 10]
 

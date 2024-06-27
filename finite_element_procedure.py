@@ -72,35 +72,4 @@ def assembling_algorithm(finite_elements, number_of_element_nodes, K, Rhs, mater
                     if eq2 > 0:
                         # Add the appropriate component of the element stiffness matrix to K
                         K[eq1 - 1, eq2 - 1] += element_stiffness_matrix[a, b]
-            if eq1 == 0:
-                if finite_elements[e].get_boundaries()[a][0] == Type.Dirichlet.value:
-                    if a == 1:
-                        at1 = EQ(finite_elements, a + 1, e) #2
-                        at2 = EQ(finite_elements, a + 2, e) #3
-                        at3 = EQ(finite_elements, a + 3, e) #4
-                        Rhs[at1 - 1] -= finite_elements[e].get_boundaries()[0][1]*element_stiffness_matrix[1][0]
-                        Rhs[at2 - 1] -= finite_elements[e].get_boundaries()[0][1]*element_stiffness_matrix[2][0]
-                        Rhs[at3 - 1] -= finite_elements[e].get_boundaries()[0][1]*element_stiffness_matrix[3][0]
-
-                    elif a == 2:
-                        at1 = EQ(finite_elements, a - 1, e) #1
-                        at2 = EQ(finite_elements, a + 1, e) #3
-                        at3 = EQ(finite_elements, a + 2, e) #4
-                        Rhs[at1 - 1] -= finite_elements[e].get_boundaries()[1][1] * element_stiffness_matrix[0][1]
-                        Rhs[at2 - 1] -= finite_elements[e].get_boundaries()[1][1] * element_stiffness_matrix[2][1]
-                        Rhs[at3 - 1] -= finite_elements[e].get_boundaries()[1][1] * element_stiffness_matrix[3][1]
-                    elif a ==3:
-                        at1 = EQ(finite_elements, a - 2, e) #1
-                        at2 = EQ(finite_elements, a - 1, e) #2
-                        at3 = EQ(finite_elements, a + 1, e) #4
-                        Rhs[at1 - 1] -= finite_elements[e].get_boundaries()[2][1] * element_stiffness_matrix[0][2]
-                        Rhs[at2 - 1] -= finite_elements[e].get_boundaries()[2][1] * element_stiffness_matrix[1][2]
-                        Rhs[at3 - 1] -= finite_elements[e].get_boundaries()[2][1] * element_stiffness_matrix[3][2]
-                    elif a == 4:
-                        at1 = EQ(finite_elements, a - 3, e) #1
-                        at2 = EQ(finite_elements, a - 2, e) #2
-                        at3 = EQ(finite_elements, a - 1, e) #3
-                        Rhs[at1 - 1] -= finite_elements[e].get_boundaries()[3][1]*element_stiffness_matrix[0][3]
-                        Rhs[at2 - 1] -= finite_elements[e].get_boundaries()[3][1]*element_stiffness_matrix[1][3]
-                        Rhs[at3 - 1] -= finite_elements[e].get_boundaries()[3][1]*element_stiffness_matrix[2][3]
     return K, Rhs
