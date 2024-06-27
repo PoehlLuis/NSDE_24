@@ -38,12 +38,19 @@ Local Node Numbers starting from bottom left in a counter-clockwise rotation
 # TODO 
 width, height, order_num_int, amount_of_nodes_per_axis = getGeometryInputs_hard_coded()
 
+
+rho = 1
+#mat_tensor = [[1,1],[1,1]]
+width, height, order_num_int, amount_of_nodes_per_axis = getGeometryInputs_hard_coded()
+#width, height, order_num_int = getGeometryInputs()
+
+#line_start, line_end, line_value_function = getLineInputs(width, height)
 line_start, line_end, line_value_function, amount_of_line_points = getLineInputs_hard_coded(width, height)
 
+#mat_tensor = getMaterialTensor()
 mat_tensor = getMaterialTensor_hard_coded()
 
 boundary_conditions_ = getBCInputs_hard_coded()
-
 
 # de drei zeilen kennen gelöscht werden
 boundary_conditions = [[boundary_conditions_[0][0],boundary_conditions_[0][1]],
@@ -71,18 +78,19 @@ if line_coords:  # checks if list is not empty
 NE_array = get_node_equation_array(array_size, mesh_coords, line_coords)
 
 # creates the finite elements of the domain
-finite_elements = element_generation(NE_array, amount_of_nodes_per_axis, height, width, boundary_conditions)
+
+finite_elements = element_generation(NE_array, amount_of_nodes_per_axis, height, width)
+
 # System-matrix K
 
 K = np.zeros([array_size, array_size])
 
-rho = 1
+
 rhs = np.zeros(array_size)
 K, rhs = assembling_algorithm(finite_elements, 4, K, rhs, mat_tensor, order_num_int, rho)
 
-#Resize the Arrays to the size we need them by cutting away the 0 entries
-K = K[:array_size - len(line_values) - 36, :array_size - len(line_values) - 36]
-rhs = rhs[:array_size - len(line_values) - 36]
+K = K[:array_size - 36, :array_size - 36]
+rhs = rhs[:array_size - 36]
 
 u = np.linalg.solve(K, rhs)
 
