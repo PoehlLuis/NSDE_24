@@ -150,4 +150,4 @@ def getBCInput(side):
 
 # value 10 on the left, value 0 on the right, neumann 0 on top an bottom
 def getBCInputs_hard_coded():
-    return [bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet")]
+    return [bc.BoundaryCondition(10,"Dirichlet"),bc.BoundaryCondition(5,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet")]

@@ -44,6 +44,16 @@ def element_generation(node_equation_array, dimension, height, width, amount_of_
                  [bc.find_global_node_nr([x * delta_x, height - (y + 1) * delta_y], width, height,
                                          amount_of_nodes_per_axis)]])
 
+            """node_numbers = np.array(
+                [[bc.find_global_node_nr([x * delta_x, height - (y + 1) * delta_y], width, height,
+                                         amount_of_nodes_per_axis)],
+                 [bc.find_global_node_nr([(x + 1) * delta_x, height - (y + 1) * delta_y], width, height,
+                                         amount_of_nodes_per_axis)],
+                 [bc.find_global_node_nr([(x + 1) * delta_x, height - y * delta_y], width, height,
+                                         amount_of_nodes_per_axis)],
+                 [bc.find_global_node_nr([x * delta_x, height - y * delta_y], width, height,
+                                        amount_of_nodes_per_axis)]])"""
+
             global_coords = np.array(
                 [[delta_x * ((element_number - 1) % (dimension - 1)), height - y * delta_y - delta_y],
                  [delta_x * ((element_number - 1) % (dimension - 1)) + delta_x, height - y * delta_y - delta_y],

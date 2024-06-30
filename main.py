@@ -76,7 +76,9 @@ K = np.zeros([array_size, array_size])
 
 rhs = np.zeros(array_size)
 K, rhs = assembling_algorithm(finite_elements, 4, K, rhs, mat_tensor, order_num_int, rho)
-# rhs = np.zeros(array_size)  # TODO Dont know if thats more "right" and on the RHS should be zeros for internal nodes?? IDK
+#rhs = np.zeros(array_size)  # TODO Dont know if thats more "right" and on the RHS should be zeros for internal nodes?? IDK
+#rhs = np.full(5,array_size)
+
 K, rhs = bc.apply_boundary_conditions(K, rhs, boundary_conditions, bc.get_boundary_nodes(mesh_coords, width, height),
                                       width, height, amount_of_nodes_per_axis)
 
@@ -108,6 +110,7 @@ for j in range(0, 9):
                         amount_of_nodes_per_axis * (j) + i, amount_of_nodes_per_axis * (j) + (i + 1)])
         global_node_numbers_list.append(arr)
 
+
 global_node_numbers_array = np.array(global_node_numbers_list)
 
 # Export Writer
@@ -133,7 +136,5 @@ writer.writeheader()
 
 for i, value in enumerate(u):
     writer.writerow({'coordinates': mesh_coords[i], 'value': u[i]})
-
-1  # %%
 
 # %%
