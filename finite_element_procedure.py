@@ -63,13 +63,10 @@ def assembling_algorithm(finite_elements, number_of_element_nodes, K, Rhs, mater
         # Compute the elements rhs matrix
         element_force_vector = rhs(order, global_coords, rho)
 
-        for a in range(1, number_of_element_nodes):
-            eq1 = EQ(finite_elements, a, e)
-            if eq1 > 0:
-                Rhs[eq1 - 1] += element_force_vector[a]
-                for b in range(1, number_of_element_nodes):
-                    eq2 = EQ(finite_elements, b, e)
-                    if eq2 > 0:
-                        # Add the appropriate component of the element stiffness matrix to K
-                        K[eq1 - 1, eq2 - 1] += element_stiffness_matrix[a, b]
+        for a in range(1, number_of_element_nodes+1):
+                eq1 = EQ(finite_elements, a, e)
+                Rhs[eq1 - 1] += element_force_vector[a-1]
+                for b in range(1, number_of_element_nodes+1):
+                    eq2 = EQ(finite_elements, b, e)                    # Add the appropriate component of the element stiffness matrix to K
+                    K[eq1 - 1, eq2 - 1] += element_stiffness_matrix[a-1, b-1]
     return K, Rhs

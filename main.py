@@ -77,6 +77,7 @@ K = np.zeros([array_size, array_size])
 rhs = np.zeros(array_size)
 K, rhs = assembling_algorithm(finite_elements, 4, K, rhs, mat_tensor, order_num_int, rho)
 # rhs = np.zeros(array_size)  # TODO Dont know if thats more "right" and on the RHS should be zeros for internal nodes?? IDK
+
 K, rhs = bc.apply_boundary_conditions(K, rhs, boundary_conditions, bc.get_boundary_nodes(mesh_coords, width, height),
                                       width, height, amount_of_nodes_per_axis)
 
