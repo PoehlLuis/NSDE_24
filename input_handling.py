@@ -6,8 +6,7 @@ import boundary_condition as bc
 
 # used for testing the program, just wirte the values in here
 def getGeometryInputs_hard_coded():
-    width, height, order_num_int, amount_of_nodes_per_axis = 90, 180, 1, 10
-
+    width, height, order_num_int, amount_of_nodes_per_axis = 90, 180, 4, 6
     return width, height, order_num_int, amount_of_nodes_per_axis
 
 # for finished version, lets user input values and error-checks them
@@ -19,7 +18,7 @@ def getGeometryInputs():
     print("Input the Height: ")
     height = getNumberAboveZero()
     print("Input the Order of the Numerical Integration: ")
-    order_num_int = getNumberFromUserInRange(4)
+    order_num_int = getIntegerNumberAboveZero()
     print("Input the Amount of Nodes per Axis: ")
     amount_of_nodes_per_axis = getIntegerNumberAboveZero()
 
@@ -107,10 +106,10 @@ def getLineInputs(width, height):
     return start, end, value_function, amount_of_line_points
 
 def getLineInputs_hard_coded(height, width):
-    start = (50, 180)
-    end = (50, 0)
+    start = (50, 0)
+    end = (50, 180)
     value_function = "0"
-    amount_of_line_points = 10
+    amount_of_line_points = 20
 
     #start = (10, 160)
     #end = (57, 100)
@@ -143,11 +142,11 @@ def getBCInputs():
 def getBCInput(side):
     bc = [0,0]
     print(f"Input the {side} boundary type  0=Dirichlet 1=Neumann: ")
-    bc[0] = getNumberFromUserInRangeWithZero(1)
+    bc[0] = getNumberFromUserInRangeWithZero(1)  # TODO check if kommazohlen gian
     print(f"Input the {side} boundary value: ")
     bc[1] = getNumberFromUserWithAll()
     return bc
 
 # value 10 on the left, value 0 on the right, neumann 0 on top an bottom
 def getBCInputs_hard_coded():
-    return [bc.BoundaryCondition(10,"Dirichlet"),bc.BoundaryCondition(5,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Dirichlet")]
+    return [bc.BoundaryCondition(100,"Dirichlet"),bc.BoundaryCondition(0,"Neumann"),bc.BoundaryCondition(0,"Dirichlet"),bc.BoundaryCondition(0,"Neumann")]

@@ -28,7 +28,7 @@ def get_boundary_nodes(mesh_coords, width, height):
     left_nodes = mesh_coords[(x_values == 0), :]
     right_nodes = mesh_coords[(x_values == width), :]
     top_nodes = mesh_coords[(x_values != 0) & (x_values != width) & (y_values == height), :]
-    bottom_nodes = mesh_coords[(x_values != 0)& (x_values != width) & (y_values == 0), :]
+    bottom_nodes = mesh_coords[(x_values != 0) & (x_values != width) & (y_values == 0), :]
 
     boundary_nodes = (left_nodes, top_nodes, right_nodes, bottom_nodes)
     return boundary_nodes
@@ -42,7 +42,6 @@ def apply_boundary_conditions(system_matrix, rhs, boundary_conditions, boundary_
             bc_value = side.value
             if side.bc_type == "Dirichlet":
                 system_matrix[node_index, :] = 0
-                system_matrix[:, node_index] = 0  # TODO: Maybe delete/change this?? # ToDo: We probably need this to maintein the tridiagonal structure
                 system_matrix[node_index, node_index] = 1
                 rhs[node_index] = bc_value
             elif side.bc_type == "Neumann":
@@ -55,9 +54,7 @@ def apply_boundary_conditions(system_matrix, rhs, boundary_conditions, boundary_
 def find_global_node_nr(node, width, height, amount_of_nodes_per_axis):
     x_step_size = width / (amount_of_nodes_per_axis - 1)
     y_step_size = height / (amount_of_nodes_per_axis - 1)
-    a = node[0]
-    b = node[1]
-    node_in_row = node[0] / x_step_size + 1
-    node_in_col = amount_of_nodes_per_axis - node[1] / y_step_size
+    node_in_row = round(node[0] / x_step_size) + 1
+    node_in_col = amount_of_nodes_per_axis - round(node[1] / y_step_size)
 
     return int(node_in_row + (node_in_col - 1) * amount_of_nodes_per_axis)

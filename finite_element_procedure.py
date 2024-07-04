@@ -2,17 +2,18 @@ import numpy as np
 from Integration import *
 from enum import Enum
 
+
 class Type(Enum):
     Dirichlet = 0
     Neumann = 1
+
 
 # Knotengleichungsarray / Node-Equation-Array
 # Inputs: amount of nodes in the domain
 #         coordinates of the domain 
 #         coordinates of the line in the domain with default empty array as default value
 # Output: Array containing node-equation-numbers
-def get_node_equation_array(array_size, mesh_coords, line_coords = []):
-
+def get_node_equation_array(array_size, mesh_coords, line_coords=[]):
     node_equation_array = np.zeros(array_size, dtype=int)
 
     min_x = np.min(mesh_coords[:, 0])
@@ -22,22 +23,23 @@ def get_node_equation_array(array_size, mesh_coords, line_coords = []):
 
     i, j = 0, 1  # i for indexing and j for value of globale gleichungsnummer
     for (x, y) in mesh_coords:
-        
-        if(x != min_x and x != max_x and y != min_y and y != max_y):
+
+        if (x != min_x and x != max_x and y != min_y and y != max_y):
             # check if this mesh_coord is one of the line_coordinates
             found = False
             for l in range(len(line_coords)):
-                if((x, y) == line_coords[l]):
+                if ((x, y) == line_coords[l]):
                     found = True
                     break
 
-            if(found == False):
+            if (found == False):
                 node_equation_array[i] = j
                 j += 1
-                
+
         i += 1
 
     return node_equation_array
+
 
 # Gleichungsarray / Equation-Array
 # Inputs: array containing the finite elements of the domain
@@ -46,6 +48,8 @@ def get_node_equation_array(array_size, mesh_coords, line_coords = []):
 # Output: global equation number
 def EQ(finite_elements, local_number, element_number):
     return finite_elements[element_number].get_global_node_numbers()[local_number - 1]
+    # return finite_elements[element_number].get_global_equation_number()[local_number - 1]
+
 
 # Assembling-Algorithm from the VO
 # Inputs: array of finite-element-objects
@@ -60,16 +64,18 @@ def assembling_algorithm(finite_elements, number_of_element_nodes, K, Rhs, mater
 
         # Compute the elements stiffness matrix
         element_stiffness_matrix = stiffnessMatrix(order, global_coords, material_tensor)
+        # print(element_stiffness_matrix)
         # Compute the elements rhs matrix
-        element_force_vector = rhs(order, global_coords, rho)
+        element_force_vector = np.zeros(4)  # rhs(order, global_coords, rho) #TODO i würd mol so lossen. des ich wia wenn ba dr storken formulierung af dr rechten seite 0 steat. also quellterm = 0, lei die rondbedingungen mochen wos
+        # print(element_force_vector)
 
-        for a in range(1, number_of_element_nodes):
+        for a in range(1, number_of_element_nodes + 1):
             eq1 = EQ(finite_elements, a, e)
             if eq1 > 0:
-                Rhs[eq1 - 1] += element_force_vector[a]
-                for b in range(1, number_of_element_nodes):
+                Rhs[eq1 - 1] += element_force_vector[a - 1]
+                for b in range(1, number_of_element_nodes + 1):
                     eq2 = EQ(finite_elements, b, e)
                     if eq2 > 0:
                         # Add the appropriate component of the element stiffness matrix to K
-                        K[eq1 - 1, eq2 - 1] += element_stiffness_matrix[a, b]
+                        K[eq1 - 1, eq2 - 1] += element_stiffness_matrix[a - 1, b - 1]
     return K, Rhs

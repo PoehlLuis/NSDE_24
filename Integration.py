@@ -1,5 +1,6 @@
 import numpy as np
 
+
 def dNi_(xi, eta):
     """
         :parameter
@@ -8,12 +9,12 @@ def dNi_(xi, eta):
         J: Jacobian matrix
     """
 
-    dNi_dxi = np.array([-0.25 * (1 - xi), 0.25 * (1 + xi), 0.25 * (1 + xi), -0.25 * (1 - xi)])
-    dNi_deta = np.array([-0.25 * (1 - eta), -0.25 * (1 - eta), 0.25 * (1 + eta), 0.25 * (1 + eta)])
+    dNi_deta = np.array([-0.25 * (1 - xi), -0.25 * (1 + xi), 0.25 * (1 + xi), 0.25 * (1 - xi)])
+    dNi_dxi = np.array([-0.25 * (1 - eta), 0.25 * (1 - eta), 0.25 * (1 + eta), -0.25 * (1 + eta)])
     return dNi_dxi, dNi_deta
 
 
-def Jacobian(xi, eta , glob_coords):
+def Jacobian(xi, eta, glob_coords):
     """
        :parameter
        xi, eta : points for integration
@@ -23,15 +24,19 @@ def Jacobian(xi, eta , glob_coords):
     """
     dNi_dxi, dNi_deta = dNi_(xi, eta)
     J = np.zeros((2, 2))
-    J[0, 0] = dNi_dxi[0]*glob_coords[0][0] + dNi_dxi[1]*glob_coords[1][0] + dNi_dxi[2]*glob_coords[2][0] + dNi_dxi[3]*glob_coords[3][0]
-    J[0, 1] = dNi_dxi[0]*glob_coords[0][1] + dNi_dxi[1]*glob_coords[1][1] + dNi_dxi[2]*glob_coords[2][1] + dNi_dxi[3]*glob_coords[3][1]
-    J[1, 0] = dNi_deta[0]*glob_coords[0][0] + dNi_deta[1]*glob_coords[1][0] + dNi_deta[2]*glob_coords[2][0] + dNi_deta[3]*glob_coords[3][0]
-    J[1, 1] = dNi_deta[0] * glob_coords[0][1] + dNi_deta[1] * glob_coords[1][1] + dNi_deta[2] * glob_coords[2][1] + dNi_deta[3] * glob_coords[3][1]
+    J[0, 0] = dNi_dxi[0] * glob_coords[0][0] + dNi_dxi[1] * glob_coords[1][0] + dNi_dxi[2] * glob_coords[2][0] + \
+              dNi_dxi[3] * glob_coords[3][0]
+    J[0, 1] = dNi_dxi[0] * glob_coords[0][1] + dNi_dxi[1] * glob_coords[1][1] + dNi_dxi[2] * glob_coords[2][1] + \
+              dNi_dxi[3] * glob_coords[3][1]
+    J[1, 0] = dNi_deta[0] * glob_coords[0][0] + dNi_deta[1] * glob_coords[1][0] + dNi_deta[2] * glob_coords[2][0] + \
+              dNi_deta[3] * glob_coords[3][0]
+    J[1, 1] = dNi_deta[0] * glob_coords[0][1] + dNi_deta[1] * glob_coords[1][1] + dNi_deta[2] * glob_coords[2][1] + \
+              dNi_deta[3] * glob_coords[3][1]
 
     return J
 
 
-def stiffnessMatrix(order,coords,mat_tensor):
+def stiffnessMatrix(order, coords, mat_tensor):
     """
      :parameter
      order: order of the stiffness matrix
@@ -44,24 +49,21 @@ def stiffnessMatrix(order,coords,mat_tensor):
     Ke = np.zeros((4, 4))
     for i in range(order):
         for j in range(order):
-            for j in range(order):
-                xi = points[i]
-                eta = points[j]
+            xi = points[i]
+            eta = points[j]
+            J = Jacobian(xi, eta, coords)
+            detJ = np.linalg.det(J)
+            invJ = np.linalg.inv(J)
 
-                J = Jacobian(xi, eta, coords)
-                detJ = np.linalg.det(J)
-                invJ = np.linalg.inv(J)
+            global_Na = np.zeros(4)
+            global_Nb = np.zeros(4)
+            dN_dxi, dN_deta = dNi_(xi, eta)
+            for k in range(4):
+                global_Na[k] = invJ[0, 0] * dN_dxi[k] + invJ[0, 1] * dN_deta[k]
+                global_Nb[k] = invJ[1, 0] * dN_dxi[k] + invJ[1, 1] * dN_deta[k]
+            B = np.array([global_Na, global_Nb])
 
-                dN_dxi, dN_deta = dNi_(xi, eta)
-
-                global_Na = np.zeros(4)
-                global_Nb = np.zeros(4)
-                for k in range(4):
-                    global_Na[k] = invJ[0, 0] * dN_dxi[k] + invJ[0, 1] * dN_deta[k]
-                    global_Nb[k] = invJ[1, 0] * dN_dxi[k] + invJ[1, 1] * dN_deta[k]
-                B = np.array([global_Na, global_Nb])
-
-                Ke += (B.T @ mat_tensor @ B) * detJ * weight[i] * weight[j]
+            Ke += (B.T @ mat_tensor @ B) * detJ * weight[i] * weight[j]
     return Ke
 
 
